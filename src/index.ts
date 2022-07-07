@@ -1,1 +1,1 @@
-console.log('Github Actions Template with typescript');
+console.log('Github Actions Template with typescript!');
