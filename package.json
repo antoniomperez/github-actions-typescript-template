@@ -1,8 +1,8 @@
 {
-  "name": "basic-repo-template",
-  "version": "0.1.1",
-  "main": "index.js",
-  "repository": "git@github.com:antoniomperez/basic-repo-template.git",
+  "name": "github-actions-typescript-template",
+  "version": "1.0.0-alpha.0",
+  "main": "dist/index.js",
+  "repository": "git@github.com:antoniomperez/github-actions-typescript-template.git",
   "author": "Antonio Márquez Pérez <amarquez1980@gmail.com>",
   "license": "MIT",
   "scripts": {
@@ -12,9 +12,11 @@
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
     "release": "standard-version",
-    "ncu": "ncu"
+    "ncu": "ncu",
+    "build": "tsc -p tsconfig.build.json"
   },
   "devDependencies": {
+    "@types/node": "^18.0.3",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
     "cz-conventional-changelog": "3.3.0",
@@ -25,7 +27,8 @@
     "husky": "^8.0.1",
     "npm-check-updates": "^15.2.0",
     "prettier": "2.7.1",
-    "standard-version": "^9.5.0"
+    "standard-version": "^9.5.0",
+    "typescript": "^4.7.4"
   },
   "config": {
     "commitizen": {
