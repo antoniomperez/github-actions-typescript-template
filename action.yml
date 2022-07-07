@@ -1,0 +1,16 @@
+name: 'Github Actions Typescript Template'
+author: 'Antonio M. Pérez'
+description: 'Github Action with TypeScript'
+
+inputs:
+  name:
+    description: 'Name to greet'
+    required: false
+    default: 'JS Marathon viewers'
+  ghToken:
+    description: 'Github access token'
+    required: false
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
