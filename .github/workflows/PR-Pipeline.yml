@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Setup Node
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Setup Node
@@ -51,32 +51,13 @@ jobs:
       - name: lint
         run: yarn lint
 
-  build:
-    needs: [format, lint]
-    name: Build
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: 'yarn'
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - name: build
-        run: yarn build
-
   test:
-    needs: [build]
+    needs: [format, lint]
     name: Unit Testing
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Setup Node
@@ -88,3 +69,47 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Test
         run: yarn test
+
+  build:
+    needs: [test]
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: build
+        run: yarn build
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
+
+  action:
+    needs: [build]
+    name: Run Action
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - name: Run my action
+        uses: ./
+        with:
+          name: 'This Dot Labs'
+          ghToken: ${{ secrets.GITHUB_TOKEN }}
