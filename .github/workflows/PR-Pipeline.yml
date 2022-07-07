@@ -30,7 +30,8 @@ jobs:
           node-version: 16
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - uses: actions/cache@v3
+      - name: Caching entire repository
+        uses: actions/cache@v3
         id: restore-package
         with:
           path: ./*
@@ -45,7 +46,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-      - uses: actions/cache@v3
+      - name: Restoring caching repository
+        uses: actions/cache@v3
         id: restore-package
         with:
           path: ./*
@@ -54,20 +56,20 @@ jobs:
         run: yarn format:check
 
   lint:
+    needs: [install]
     name: Linting
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'yarn'
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+      - name: Restoring caching repository
+        uses: actions/cache@v3
+        id: restore-package
+        with:
+          path: ./*
+          key: ${{ github.sha }}
       - name: lint
         run: yarn lint
 
@@ -76,17 +78,16 @@ jobs:
     name: Unit Testing
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'yarn'
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+      - name: Restoring caching repository
+        uses: actions/cache@v3
+        id: restore-package
+        with:
+          path: ./*
+          key: ${{ github.sha }}
       - name: Test
         run: yarn test
 
@@ -95,17 +96,16 @@ jobs:
     name: Build
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'yarn'
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+      - name: Restoring caching repository
+        uses: actions/cache@v3
+        id: restore-package
+        with:
+          path: ./*
+          key: ${{ github.sha }}
       - name: build
         run: yarn build
       - name: Upload Artifact
