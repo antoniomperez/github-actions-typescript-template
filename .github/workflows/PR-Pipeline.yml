@@ -33,6 +33,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
   format:
+    needs: [install]
     name: Formating
     runs-on: ubuntu-20.04
     steps:
