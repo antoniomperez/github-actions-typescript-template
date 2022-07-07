@@ -47,10 +47,10 @@
     }
   },
   "lint-staged": {
-    "**/*.{js, ts}": [
+    "**/*.ts": [
       "yarn lint",
       "yarn format:check",
-      "yarn test --findRelatedTests"
+      "yarn test --wathAll=false --findRelatedTests --bail"
     ]
   }
 }
