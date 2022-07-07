@@ -28,24 +28,28 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'yarn'
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+      - uses: actions/cache@v3
+        id: restore-package
+        with:
+          path: ./*
+          key: ${{ github.sha }}
 
   format:
     needs: [install]
     name: Formating
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'yarn'
+      - uses: actions/cache@v3
+        id: restore-package
+        with:
+          path: ./*
+          key: ${{ github.sha }}
       - name: format
         run: yarn format:check
 
