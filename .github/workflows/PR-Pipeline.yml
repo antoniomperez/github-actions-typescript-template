@@ -16,14 +16,6 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-  prtitle:
-    name: Validate PR title
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: amannn/action-semantic-pull-request@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   format:
     name: Formating
     runs-on: ubuntu-20.04
