@@ -1,4 +1,4 @@
-name: PR-Pipeline
+name: PR Pipeline
 
 on:
   pull_request:
@@ -16,8 +16,8 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-  format:
-    name: Formating
+  install:
+    name: install dependencies
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -31,6 +31,15 @@ jobs:
           cache: 'yarn'
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+
+  format:
+    name: Formating
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: format
         run: yarn format:check
 
