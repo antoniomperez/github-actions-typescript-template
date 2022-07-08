@@ -157,7 +157,7 @@ jobs:
       - name: Get release type
         id: releaseType
         run: |
-          RELEASE_TYPE=$(jq '.releaseType' ${REPO}/release.json | tr -d '"')
+          RELEASE_TYPE=$(jq '.releaseType' release.json | tr -d '"')
           echo "::set-output name=releaseType::$RELEASE_TYPE"
       - name: bumb
         if: ${{ steps.releaseType.outputs.releaseType == 'alpha' }}
@@ -165,6 +165,7 @@ jobs:
       - name: Check git HEAD
         run: echo ${GITHUB_HEAD_REF}
       - name: Pushing Release tag
+        if: ${{ steps.releaseType.outputs.releaseType == 'alpha' }}
         run: git push --follow-tags origin HEAD:${GITHUB_HEAD_REF}
 
   action:
