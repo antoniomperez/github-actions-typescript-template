@@ -157,7 +157,8 @@ jobs:
       - name: Get release type
         id: releaseType
         run: |
-          RELEASE_TYPE=$(jq '.releaseType' ${REPO}/release.json | tr -d '"')
+          RELEASE_TYPE=$(jq '.releaseType' release.json | tr -d '"')
+          echo $RELEASE_TYPE
           echo "::set-output name=releaseType::$RELEASE_TYPE"
       - name: bumb
         if: ${{ steps.releaseType.outputs.releaseType == 'alpha' }}
