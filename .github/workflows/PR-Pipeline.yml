@@ -132,7 +132,7 @@ jobs:
         run: yarn test
 
   action:
-    needs: [build]
+    needs: [test]
     name: Run Action
     runs-on: ubuntu-20.04
     steps:
