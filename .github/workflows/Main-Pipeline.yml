@@ -37,7 +37,7 @@ jobs:
           key: ${{ github.sha }}
 
   build:
-    needs: [format, lint]
+    needs: [install]
     name: Build
     runs-on: ubuntu-20.04
     steps:
@@ -86,7 +86,7 @@ jobs:
         run: yarn test
 
   release:
-    needs: [build]
+    needs: [test]
     name: Release Version
     runs-on: ubuntu-20.04
     steps:
