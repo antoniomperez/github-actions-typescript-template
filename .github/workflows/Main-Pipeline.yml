@@ -85,9 +85,9 @@ jobs:
       - name: Test
         run: yarn test
 
-  release:
+  bump:
     needs: [test]
-    name: Release Version
+    name: Bump Version
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
