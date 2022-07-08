@@ -162,11 +162,28 @@ jobs:
           echo "::set-output name=releaseType::$RELEASE_TYPE"
       - name: bumb
         if: ${{ steps.releaseType.outputs.releaseType == 'alpha' }}
-        run: yarn release --prerelease alpha
+        run: |
+          yarn release --prerelease alpha
+          echo "::set-output name=bumped::true
+      - name: bumb
+        if: ${{ steps.releaseType.outputs.releaseType == 'beta' }}
+        run: |
+          yarn release --prerelease beta
+          echo "::set-output name=bumped::true
+      - name: bumb
+        if: ${{ steps.releaseType.outputs.releaseType == 'rc' }}
+        run: |
+          yarn release --prerelease rc
+          echo "::set-output name=bumped::true
+      - name: bumb
+        if: ${{ steps.releaseType.outputs.releaseType == 'stable' }}
+        run: |
+          yarn release
+          echo "::set-output name=bumped::true
       - name: Check git HEAD
         run: echo ${GITHUB_HEAD_REF}
       - name: Pushing Release tag
-        if: ${{ steps.releaseType.outputs.releaseType == 'alpha' }}
+        if: ${{ steps.bump.outputs.bumped == true}}
         run: git push --follow-tags origin HEAD:${GITHUB_HEAD_REF}
 
   action:
