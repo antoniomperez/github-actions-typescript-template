@@ -1,0 +1,152 @@
+name: PR Pipeline
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  cancel-jobs:
+    name: Cancel running jobs
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
+  install:
+    name: Install dependencies
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Caching node_modules
+        uses: actions/cache@v3
+        id: restore-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ github.sha }}
+
+  format:
+    needs: [install]
+    name: Formating
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Restoring node_modules cached
+        uses: actions/cache@v3
+        id: restore-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ github.sha }}
+      - name: format
+        run: yarn format:check
+
+  lint:
+    needs: [install]
+    name: Linting
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Restoring node_modules cached
+        uses: actions/cache@v3
+        id: restore-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ github.sha }}
+      - name: lint
+        run: yarn lint
+
+  build:
+    needs: [format, lint]
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Restoring node_modules cached
+        uses: actions/cache@v3
+        id: restore-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ github.sha }}
+      - name: build
+        run: yarn build
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
+
+  test:
+    needs: [build]
+    name: Unit Testing
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Restoring node_modules cached
+        uses: actions/cache@v3
+        id: restore-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ github.sha }}
+      - name: Test
+        run: yarn test
+
+  action:
+    needs: [test]
+    name: Run Action
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - name: Run my action
+        uses: ./
+        with:
+          name: 'This Dot Labs'
+          ghToken: ${{ secrets.GITHUB_TOKEN }}

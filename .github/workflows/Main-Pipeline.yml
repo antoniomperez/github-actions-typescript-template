@@ -1,0 +1,114 @@
+name: Main Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  cancel-jobs:
+    name: Cancel running jobs
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
+  install:
+    name: Install dependencies
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Caching node_modules
+        uses: actions/cache@v3
+        id: restore-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ github.sha }}
+
+  build:
+    needs: [install]
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Restoring node_modules cached
+        uses: actions/cache@v3
+        id: restore-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ github.sha }}
+      - name: build
+        run: yarn build
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
+
+  test:
+    needs: [build]
+    name: Unit Testing
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Restoring node_modules cached
+        uses: actions/cache@v3
+        id: restore-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ github.sha }}
+      - name: Test
+        run: yarn test
+
+  release:
+    needs: [test]
+    name: Release Version
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Restoring node_modules cached
+        uses: actions/cache@v3
+        id: restore-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ github.sha }}
+      - name: Configuring Git user email
+        run: git config --global user.email "actions@github.com"
+      - name: Configuring Git user name
+        run: git config --global user.name "Github Action Bot"
+      - name: bumb
+        run: yarn release
+      - name: Pushing Release tag
+        run: git push --follow-tags origin HEAD:${GITHUB_HEAD_REF}

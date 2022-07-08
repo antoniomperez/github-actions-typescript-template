@@ -17,6 +17,14 @@ module.exports = {
     },
     { value: 'test', name: 'test:     Adding missing tests' },
     {
+      value: 'ci',
+      name: 'ci:       Change to our CI configuration files and scripts (example scopes: Travis, Github Actions, Circle CI)',
+    },
+    {
+      value: 'build',
+      name: 'build:    Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)',
+    },
+    {
       value: 'chore',
       name: 'chore:    Changes to the build process or auxiliary tools\n            and libraries such as documentation generation',
     },
