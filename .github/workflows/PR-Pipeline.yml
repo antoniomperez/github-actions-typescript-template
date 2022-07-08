@@ -131,6 +131,36 @@ jobs:
       - name: Test
         run: yarn test
 
+  bump:
+    needs: [test]
+    name: Bump Version
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Restoring node_modules cached
+        uses: actions/cache@v3
+        id: restore-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ github.sha }}
+      - name: Configuring Git user email
+        run: git config --global user.email "actions@github.com"
+      - name: Configuring Git user name
+        run: git config --global user.name "Github Action Bot"
+      - name: bumb
+        run: yarn release --prerelease alpha
+      - name: Check git HEAD
+        run: echo ${GITHUB_HEAD_REF}
+      - name: Pushing Release tag
+        run: git push --follow-tags origin HEAD:${GITHUB_HEAD_REF}
+
   action:
     needs: [test]
     name: Run Action
